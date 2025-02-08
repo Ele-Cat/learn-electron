@@ -1,5 +1,5 @@
 // 导入模块
-const { app, BrowserWindow, ipcMain, Menu } = require('electron')
+const { app, BrowserWindow, ipcMain, Menu, dialog } = require('electron')
 const path = require('node:path')
 
 const createWindow = () => {
@@ -18,6 +18,7 @@ const createWindow = () => {
   })
 
   ipcMain.on('set-title', handleSetTitle)
+  ipcMain.handle('dialog:openFile', handleFileOpen)
 
   win.loadFile('index.html')
   // win.loadURL('https://chat18.aichatos98.com')
@@ -48,4 +49,21 @@ function handleSetTitle(event, title) {
   const webContents = event.sender
   const win = BrowserWindow.fromWebContents(webContents)
   win.setTitle(title)
+}
+
+async function handleFileOpen () {
+  const { canceled, filePaths } = await dialog.showOpenDialog({
+    properties: ['openFile'],
+    filters: [
+      { name: 'Images', extensions: ['jpg', 'png', 'gif'] },
+      { name: 'Movies', extensions: ['mkv', 'avi', 'mp4'] },
+      { name: 'Custom File Type', extensions: ['as'] },
+      { name: 'All Files', extensions: ['*'] }
+    ]
+  })
+  if (!canceled) {
+    return filePaths[0]
+  } else {
+    return ''
+  }
 }

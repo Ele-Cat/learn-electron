@@ -10,9 +10,17 @@ func()
 
 console.log('myApi', myApi);
 
-const setButton = document.getElementById('btn')
+const setButton = document.getElementById('setButton')
 const titleInput = document.getElementById('title')
 setButton.addEventListener('click', () => {
   const title = titleInput.value
   window.electronAPI.setTitle(title)
+})
+
+const openButton = document.getElementById('openButton')
+const filePathElement = document.getElementById('filePath')
+
+openButton.addEventListener('click', async () => {
+  const filePath = await window.electronAPI.openFile()
+  filePathElement.innerText = filePath
 })

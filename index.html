@@ -13,9 +13,12 @@
     <title>👋Electron</title>
   </head>
   <body>
-    <p id="info"></p>
+    <p id="info"></p><hr />
     Title: <input id="title"/>
-    <button id="btn" type="button">Set</button>
+    <button id="setButton" type="button">Set</button><hr />
+
+    <button type="button" id="openButton">Open a File</button>
+    File path: <strong id="filePath"></strong><hr />
   </body>
   <script src="./renderer.js"></script>
 </html>
