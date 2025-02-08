@@ -17,8 +17,10 @@ const createWindow = () => {
     },
   })
 
+  ipcMain.on('set-title', handleSetTitle)
+
   win.loadFile('index.html')
-  // win.loadURL('https://www.baidu.com')
+  // win.loadURL('https://chat18.aichatos98.com')
 
   // 移除默认菜单
   // Menu.setApplicationMenu(null);
@@ -41,3 +43,9 @@ app.on('window-all-closed', () => {
 app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) createWindow()
 })
+
+function handleSetTitle(event, title) {
+  const webContents = event.sender
+  const win = BrowserWindow.fromWebContents(webContents)
+  win.setTitle(title)
+}

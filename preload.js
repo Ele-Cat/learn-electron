@@ -9,3 +9,11 @@ contextBridge.exposeInMainWorld('versions', {
   a: 1,
   b: 2,
 })
+
+contextBridge.exposeInMainWorld('myApi', {
+  desktop: true,
+})
+
+contextBridge.exposeInMainWorld('electronAPI', {
+  setTitle: (title) => ipcRenderer.send('set-title', title)
+})
