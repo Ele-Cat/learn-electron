@@ -17,6 +17,24 @@ const createWindow = () => {
     },
   })
 
+  const menu = Menu.buildFromTemplate([
+    {
+      label: '操作数据',
+      submenu: [
+        {
+          click: () => win.webContents.send('update-counter', 1),
+          label: 'Increment'
+        },
+        {
+          click: () => win.webContents.send('update-counter', -1),
+          label: 'Decrement'
+        }
+      ]
+    }
+
+  ])
+  Menu.setApplicationMenu(menu)
+
   ipcMain.on('set-title', handleSetTitle)
   ipcMain.handle('dialog:openFile', handleFileOpen)
 
@@ -26,7 +44,7 @@ const createWindow = () => {
   // 移除默认菜单
   // Menu.setApplicationMenu(null);
   // 动态隐藏菜单栏
-  win.setMenuBarVisibility(false);
+  // win.setMenuBarVisibility(false);
 
   win.webContents.openDevTools();
 }
@@ -34,6 +52,9 @@ const createWindow = () => {
 // 控制应用程序的事件生命周期
 app.on('ready', () => {
   ipcMain.handle('ping', () => 'pong')
+  ipcMain.on('counter-value', (_event, value) => {
+    console.log(value) // will print value to Node console
+  })
   createWindow()
 })
 
