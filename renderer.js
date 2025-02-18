@@ -1,35 +1,9 @@
-const information = document.getElementById('info')
-information.innerText = `本应用正在使用 Chrome (v${versions.chrome()}), Node.js (v${versions.node()}), 和 Electron (v${versions.electron()})，变量a=${versions.a}, b=${versions.b}`
-
-const func = async () => {
-  const response = await window.versions.ping()
-  console.log(response) // 打印 'pong'
-}
-
-func()
-
-console.log('myApi', myApi);
-
-const setButton = document.getElementById('setButton')
-const titleInput = document.getElementById('title')
-setButton.addEventListener('click', () => {
-  const title = titleInput.value
-  window.electronAPI.setTitle(title)
+document.getElementById('toggle-dark-mode').addEventListener('click', async () => {
+  const isDarkMode = await window.darkMode.toggle()
+  document.getElementById('theme-source').innerHTML = isDarkMode ? 'Dark' : 'Light'
 })
 
-const openButton = document.getElementById('openButton')
-const filePathElement = document.getElementById('filePath')
-
-openButton.addEventListener('click', async () => {
-  const filePath = await window.electronAPI.openFile()
-  filePathElement.innerText = filePath
-})
-
-const counter = document.getElementById('counter')
-
-window.electronAPI.onUpdateCounter((value) => {
-  const oldValue = Number(counter.innerText)
-  const newValue = oldValue + value
-  counter.innerText = newValue.toString()
-  window.electronAPI.counterValue(newValue)
+document.getElementById('reset-to-system').addEventListener('click', async () => {
+  await window.darkMode.system()
+  document.getElementById('theme-source').innerHTML = 'System'
 })

@@ -1,26 +1,18 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <meta
-      http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self'"
-    />
-    <meta
-      http-equiv="X-Content-Security-Policy"
-      content="default-src 'self'; script-src 'self'"
-    />
-    <title>👋Electron</title>
-  </head>
-  <body>
-    <p id="info"></p><hr />
-    Title: <input id="title"/>
-    <button id="setButton" type="button">Set</button><hr />
+<head>
+    <meta charset="UTF-8">
+    <title>Hello World!</title>
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
+    <link rel="stylesheet" type="text/css" href="./styles.css">
+</head>
+<body>
+    <h1>Hello World!</h1>
+    <p>Current theme source: <strong id="theme-source">System</strong></p>
 
-    <button type="button" id="openButton">Open a File</button>
-    File path: <strong id="filePath"></strong><hr />
+    <button id="toggle-dark-mode">Toggle Dark Mode</button>
+    <button id="reset-to-system">Reset to System Theme</button>
 
-    Current value: <strong id="counter">0</strong><hr />
-  </body>
-  <script src="./renderer.js"></script>
+    <script src="renderer.js"></script>
+</body>
 </html>
