@@ -1,5 +1,5 @@
 // 导入模块
-const { app, BrowserWindow, ipcMain, nativeTheme } = require('electron')
+const { app, BrowserWindow, ipcMain, nativeTheme, Menu, MenuItem, globalShortcut } = require('electron')
 const path = require('node:path')
 
 const createWindow = () => {
@@ -22,10 +22,22 @@ const createWindow = () => {
   // 移除默认菜单
   // Menu.setApplicationMenu(null);
   // 动态隐藏菜单栏
-  win.setMenuBarVisibility(false);
+  // win.setMenuBarVisibility(false);
 
   win.webContents.openDevTools();
 }
+
+const menu = new Menu()
+menu.append(new MenuItem({
+  label: 'Electron',
+  submenu: [{
+    role: 'help',
+    accelerator: process.platform === 'darwin' ? 'Alt+Cmd+I' : 'Alt+Shift+I',
+    click: () => { console.log('Electron rocks!') }
+  }]
+}))
+
+Menu.setApplicationMenu(menu)
 
 ipcMain.handle('dark-mode:toggle', () => {
   console.log('nativeTheme.shouldUseDarkColors: ', nativeTheme.shouldUseDarkColors);
@@ -43,6 +55,9 @@ ipcMain.handle('dark-mode:system', () => {
 
 // 控制应用程序的事件生命周期
 app.on('ready', () => {
+  globalShortcut.register('Alt+CommandOrControl+I', () => {
+    console.log('Electron loves global shortcuts!')
+  })
   createWindow()
 })
 
@@ -53,26 +68,3 @@ app.on('window-all-closed', () => {
 app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) createWindow()
 })
-
-function handleSetTitle(event, title) {
-  const webContents = event.sender
-  const win = BrowserWindow.fromWebContents(webContents)
-  win.setTitle(title)
-}
-
-async function handleFileOpen () {
-  const { canceled, filePaths } = await dialog.showOpenDialog({
-    properties: ['openFile'],
-    filters: [
-      { name: 'Images', extensions: ['jpg', 'png', 'gif'] },
-      { name: 'Movies', extensions: ['mkv', 'avi', 'mp4'] },
-      { name: 'Custom File Type', extensions: ['as'] },
-      { name: 'All Files', extensions: ['*'] }
-    ]
-  })
-  if (!canceled) {
-    return filePaths[0]
-  } else {
-    return ''
-  }
-}
