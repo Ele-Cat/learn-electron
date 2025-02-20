@@ -1,8 +1,10 @@
 // 导入模块
-const { app, BrowserWindow, ipcMain, nativeTheme, Menu, MenuItem, globalShortcut } = require('electron')
+const { app, BrowserWindow, ipcMain, nativeTheme, Menu, MenuItem, globalShortcut, Notification } = require('electron')
 const path = require('node:path')
 const fs = require('node:fs')
 const https = require('node:https')
+// 离屏渲染
+// app.disableHardwareAcceleration()
 
 const createWindow = () => {
   // 创建并控制浏览器窗口
@@ -12,6 +14,8 @@ const createWindow = () => {
     // autoHideMenuBar: true, // 隐藏菜单栏，用户仍然可以通过按下 Alt 键临时显示菜单栏
     // frame: false, // 移除标题栏和菜单栏
     webPreferences: {
+      // 离屏渲染
+      // offscreen: true,
       // nodeIntegration: true, // 控制渲染进程是否可以访问 Node.js 的 API
       // contextIsolation: true, // 控制渲染进程的 JavaScript 上下文是否与 Electron 的内部上下文隔离
       preload: path.join(__dirname, 'preload.js')
@@ -27,7 +31,14 @@ const createWindow = () => {
   })
 
   win.loadFile('index.html')
+
+  // 离屏渲染
   // win.loadURL('https://chat18.aichatos98.com')
+  // win.webContents.on('paint', (event, dirty, image) => {
+  //   fs.writeFileSync('ex.png', image.toPNG())
+  // })
+  // win.webContents.setFrameRate(60)
+  // console.log(`The screenshot has been successfully saved to ${path.join(process.cwd(), 'ex.png')}`)
 
   // 移除默认菜单
   // Menu.setApplicationMenu(null);
@@ -35,6 +46,8 @@ const createWindow = () => {
   // win.setMenuBarVisibility(false);
 
   win.webContents.openDevTools();
+
+  showNotification()
 }
 
 // 注册本地快捷键
@@ -93,6 +106,13 @@ ipcMain.on('ondragstart', (event, filePath) => {
     icon: iconName
   })
 })
+
+const NOTIFICATION_TITLE = 'Basic Notification'
+const NOTIFICATION_BODY = 'Notification from the Main process'
+
+function showNotification () {
+  new Notification({ title: NOTIFICATION_TITLE, body: NOTIFICATION_BODY }).show()
+}
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit()
