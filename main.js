@@ -5,6 +5,7 @@ const fs = require('node:fs')
 const https = require('node:https')
 // 离屏渲染
 // app.disableHardwareAcceleration()
+let progressInterval
 
 const createWindow = () => {
   // 创建并控制浏览器窗口
@@ -45,9 +46,14 @@ const createWindow = () => {
   // 动态隐藏菜单栏
   // win.setMenuBarVisibility(false);
 
+  // 打开开发者工具
   win.webContents.openDevTools();
 
+  // 打开通知
   showNotification()
+
+  // 显示进度条
+  showProgressBar(win)
 }
 
 // 注册本地快捷键
@@ -109,10 +115,36 @@ ipcMain.on('ondragstart', (event, filePath) => {
 
 const NOTIFICATION_TITLE = 'Basic Notification'
 const NOTIFICATION_BODY = 'Notification from the Main process'
-
 function showNotification () {
   new Notification({ title: NOTIFICATION_TITLE, body: NOTIFICATION_BODY }).show()
 }
+
+function showProgressBar (win) {
+  const INCREMENT = 0.03
+  const INTERVAL_DELAY = 100 // ms
+
+  let c = 0
+  progressInterval = setInterval(() => {
+    // update progress bar to next value
+    // values between 0 and 1 will show progress, >1 will show indeterminate or stick at 100%
+    // 将参数设置为负值 (例如， -1) 将删除progress bar。 
+    // 设定值大于 1 在 Windows 中将表示一个不确定的进度条 ，或在其他操作系统中显示为 100%。 
+    // 一个不确定的progress bar 仍然处于活动状态，但不显示实际百分比， 并且用于当 您不知道一个操作需要多长时间才能完成的情况。
+    win.setProgressBar(c)
+
+    // increment or reset progress bar
+    if (c < 2) {
+      c += INCREMENT
+    } else {
+      c = (-INCREMENT * 30) // reset to a bit less than 0 to show reset state
+    }
+  }, INTERVAL_DELAY)
+}
+
+// before the app is terminated, clear both timers
+app.on('before-quit', () => {
+  clearInterval(progressInterval)
+})
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit()
