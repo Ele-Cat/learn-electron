@@ -1,11 +1,12 @@
 // 导入模块
-const { app, BrowserWindow, ipcMain, nativeTheme, Menu, MenuItem, globalShortcut, Notification } = require('electron')
+const { app, BrowserWindow, ipcMain, nativeTheme, Menu, MenuItem, globalShortcut, Notification, Tray, nativeImage } = require('electron')
 const path = require('node:path')
 const fs = require('node:fs')
 const https = require('node:https')
 // 离屏渲染
 // app.disableHardwareAcceleration()
 let progressInterval
+let tray
 
 const createWindow = () => {
   // 创建并控制浏览器窗口
@@ -103,6 +104,19 @@ app.on('ready', () => {
     console.log('Electron loves global shortcuts Alt+Z!')
   })
   createWindow()
+
+  const icon = nativeImage.createFromPath(iconName)
+  tray = new Tray(icon)
+  const contextMenu = Menu.buildFromTemplate([
+    { label: 'Item1', type: 'radio' },
+    { label: 'Item2', type: 'radio' },
+    { label: 'Item3', type: 'radio', checked: true },
+    { label: 'Item4', type: 'radio' }
+  ])
+  
+  tray.setContextMenu(contextMenu)
+  tray.setToolTip('This is my application')
+tray.setTitle('This is my title')
 })
 
 // 原生文件拖 & 放
@@ -140,6 +154,12 @@ function showProgressBar (win) {
     }
   }, INTERVAL_DELAY)
 }
+
+// 最近文件
+const fileName = 'recently-used.md'
+fs.writeFile(fileName, 'Lorem Ipsum', () => {
+  app.addRecentDocument(path.join(__dirname, fileName))
+})
 
 // before the app is terminated, clear both timers
 app.on('before-quit', () => {
