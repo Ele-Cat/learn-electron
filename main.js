@@ -104,19 +104,29 @@ app.on('ready', () => {
     console.log('Electron loves global shortcuts Alt+Z!')
   })
   createWindow()
+})
 
-  const icon = nativeImage.createFromPath(iconName)
+app.whenReady().then(() => {
+  // 托盘
+  const logo = path.join(__dirname, 'logo.png')
+  const icon = nativeImage.createFromPath(logo)
   tray = new Tray(icon)
   const contextMenu = Menu.buildFromTemplate([
     { label: 'Item1', type: 'radio' },
     { label: 'Item2', type: 'radio' },
     { label: 'Item3', type: 'radio', checked: true },
-    { label: 'Item4', type: 'radio' }
+    { label: 'Item4', type: 'radio' },
+    {
+      label: '退出',
+      click: () => {
+        app.quit();
+      },
+    },
   ])
   
   tray.setContextMenu(contextMenu)
   tray.setToolTip('This is my application')
-tray.setTitle('This is my title')
+  tray.setTitle('This is my title')
 })
 
 // 原生文件拖 & 放
