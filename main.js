@@ -1,6 +1,8 @@
 // 导入模块
 const { app, BrowserWindow, ipcMain, nativeTheme, Menu, MenuItem, globalShortcut } = require('electron')
 const path = require('node:path')
+const fs = require('node:fs')
+const https = require('node:https')
 
 const createWindow = () => {
   // 创建并控制浏览器窗口
@@ -16,6 +18,14 @@ const createWindow = () => {
     },
   })
 
+  // 拦截主进程中的事件
+  win.webContents.on('before-input-event', (event, input) => {
+    if (input.control && input.key.toLowerCase() === 'i') {
+      console.log('Pressed Control+I')
+      event.preventDefault()
+    }
+  })
+
   win.loadFile('index.html')
   // win.loadURL('https://chat18.aichatos98.com')
 
@@ -27,6 +37,7 @@ const createWindow = () => {
   win.webContents.openDevTools();
 }
 
+// 注册本地快捷键
 const menu = new Menu()
 menu.append(new MenuItem({
   label: 'Electron',
@@ -36,9 +47,9 @@ menu.append(new MenuItem({
     click: () => { console.log('Electron rocks!') }
   }]
 }))
-
 Menu.setApplicationMenu(menu)
 
+// Dark mode toggle
 ipcMain.handle('dark-mode:toggle', () => {
   console.log('nativeTheme.shouldUseDarkColors: ', nativeTheme.shouldUseDarkColors);
   if (nativeTheme.shouldUseDarkColors) {
@@ -48,17 +59,39 @@ ipcMain.handle('dark-mode:toggle', () => {
   }
   return nativeTheme.shouldUseDarkColors
 })
-
 ipcMain.handle('dark-mode:system', () => {
   nativeTheme.themeSource = 'system'
 })
 
+// 生成文件 & 图标
+const iconName = path.join(__dirname, 'iconForDragAndDrop.png')
+const icon = fs.createWriteStream(iconName)
+// Create a new file to copy - you can also copy existing files.
+fs.writeFileSync(path.join(__dirname, 'drag-and-drop.md'), '# File to test drag and drop')
+fs.writeFileSync(path.join(__dirname, 'drag-and-drop-1.md'), '# First file to test drag and drop')
+fs.writeFileSync(path.join(__dirname, 'drag-and-drop-2.md'), '# Second file to test drag and drop')
+https.get('https://img.icons8.com/ios/452/drag-and-drop.png', (response) => {
+  response.pipe(icon)
+})
+
 // 控制应用程序的事件生命周期
 app.on('ready', () => {
-  globalShortcut.register('Alt+CommandOrControl+I', () => {
+  // 注册全局快捷键
+  globalShortcut.register('Alt+CommandOrControl+Q', () => {
     console.log('Electron loves global shortcuts!')
   })
+  globalShortcut.register('Alt+Z', () => {
+    console.log('Electron loves global shortcuts Alt+Z!')
+  })
   createWindow()
+})
+
+// 原生文件拖 & 放
+ipcMain.on('ondragstart', (event, filePath) => {
+  event.sender.startDrag({
+    file: path.join(__dirname, filePath),
+    icon: iconName
+  })
 })
 
 app.on('window-all-closed', () => {
