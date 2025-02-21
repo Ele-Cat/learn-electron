@@ -55,6 +55,11 @@ const createWindow = () => {
 
   // 显示进度条
   showProgressBar(win)
+
+  // 任务栏自定义
+  // setThumbarButtons(win)
+  // win.once('focus', () => win.flashFrame(false))
+  // win.flashFrame(true)
 }
 
 // 注册本地快捷键
@@ -163,6 +168,24 @@ function showProgressBar (win) {
       c = (-INCREMENT * 30) // reset to a bit less than 0 to show reset state
     }
   }, INTERVAL_DELAY)
+}
+
+function setThumbarButtons (win) {
+  const logo = path.join(__dirname, 'logo.png')
+  const icon = nativeImage.createFromPath(logo)
+  win.setOverlayIcon(icon, 'Description for overlay')
+  win.setThumbarButtons([
+    {
+      tooltip: 'button1',
+      icon: icon,
+      click () { console.log('button1 clicked') }
+    }, {
+      tooltip: 'button2',
+      icon: icon,
+      flags: ['enabled', 'dismissonclick'],
+      click () { console.log('button2 clicked.') }
+    }
+  ])
 }
 
 // 最近文件
