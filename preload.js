@@ -1,7 +1,9 @@
-const { contextBridge, ipcRenderer } = require('electron')
-
-contextBridge.exposeInMainWorld('versions', {
-  node: () => process.versions.node,
-  chrome: () => process.versions.chrome,
-  electron: () => process.versions.electron,
+window.addEventListener('DOMContentLoaded', () => {
+  const el = document.getElementById('clickThroughElement')
+  el.addEventListener('mouseenter', () => {
+    ipcRenderer.send('set-ignore-mouse-events', true, { forward: true })
+  })
+  el.addEventListener('mouseleave', () => {
+    ipcRenderer.send('set-ignore-mouse-events', false)
+  })
 })

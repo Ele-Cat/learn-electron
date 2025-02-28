@@ -1,0 +1,15 @@
+body {
+  margin: 0;
+  height: 100vh;
+  app-region: drag;
+}
+.titlebar {
+  height: 30px;
+  background: blue;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  app-region: drag;
+  user-select: none;
+}
